@@ -3,98 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Invoice Pro</title>
+    <title>Invoice Generator & Emailer</title>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        :root { --primary: #2c3e50; --accent: #0070ba; --bg: #f0f2f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
-
-        /* --- UI Controls --- */
+        :root { --primary-color: #2c3e50; --accent-color: #0070ba; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 40px; color: #333; }
+        
+        /* Dashboard Controls */
         .controls { 
-            max-width: 800px; margin: 10px auto; background: white; 
-            padding: 15px; border-radius: 8px; display: flex; 
-            flex-wrap: wrap; justify-content: space-between; gap: 10px;
+            max-width: 800px; margin: 0 auto 20px auto; 
+            background: white; padding: 20px; border-radius: 8px; 
+            display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* --- Toggle Switch Styling --- */
-        .switch-container { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { 
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
-            background-color: #ccc; transition: .4s; border-radius: 24px; 
-        }
-        .slider:before { 
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; 
-            bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; 
-        }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(26px); }
-
-        /* --- Invoice Styling --- */
+        /* The Invoice Paper */
         #invoice-card {
-            background: white; width: 95%; max-width: 800px;
-            margin: 20px auto; padding: 40px; border-radius: 4px;
+            background: white; width: 800px; min-height: 1000px;
+            margin: 0 auto; padding: 50px; border-radius: 4px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            position: relative;
         }
 
-        /* Mobile View Class (Triggered by Toggle) */
-        .mobile-view { padding: 15px !important; width: 100% !important; max-width: 400px !important; font-size: 14px; }
-        .mobile-view .header { flex-direction: column; text-align: left !important; }
-        .mobile-view table, .mobile-view thead, .mobile-view tbody, .mobile-view th, .mobile-view td, .mobile-view tr { 
-            display: block; width: 100%; 
-        }
-        .mobile-view th { display: none; }
-        .mobile-view td { border-bottom: 1px solid #eee; position: relative; padding-left: 50%; text-align: right; }
-        .mobile-view td:before { content: attr(data-label); position: absolute; left: 10px; font-weight: bold; }
-
-        /* Standard Layout */
-        .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; padding: 10px; text-align: left; }
-        td { padding: 10px; border-bottom: 1px solid #eee; }
-        input { border: 1px solid #ddd; padding: 5px; border-radius: 4px; width: 100%; box-sizing: border-box; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 50px; }
+        .logo-area h1 { color: var(--primary-color); margin: 0; letter-spacing: 2px; }
         
-        .totals { margin-top: 30px; text-align: right; }
-        .btn { padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; text-decoration: none; display: inline-block; }
-        .btn-green { background: #27ae60; }
-        .btn-paypal { background: var(--accent); margin-top: 10px; }
+        .client-info { margin-bottom: 40px; }
+        .client-info input { border: none; border-bottom: 1px dashed #ccc; padding: 5px; width: 250px; font-size: 1rem; }
+        .client-info input:focus { outline: none; border-bottom: 1px solid var(--accent-color); }
 
-        @media (max-width: 600px) {
-            #invoice-card { padding: 20px; }
-            .header { flex-direction: column; }
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #f8f9fa; text-align: left; padding: 15px; border-bottom: 2px solid #eee; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+        
+        .item-input { width: 90%; border: 1px solid transparent; padding: 5px; }
+        .item-input:hover { border: 1px solid #eee; }
+
+        .totals { float: right; width: 300px; margin-top: 30px; text-align: right; }
+        .total-row { font-size: 1.2rem; font-weight: bold; padding-top: 10px; border-top: 2px solid #333; }
+
+        .footer-links { margin-top: 100px; border-top: 1px solid #eee; padding-top: 20px; color: #7f8c8d; font-size: 0.9rem; }
+        .footer-links a { color: var(--accent-color); text-decoration: none; margin-right: 15px; }
+
+        /* Buttons */
+        .btn { padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-main { background: #27ae60; color: white; }
+        .btn-main:hover { background: #219150; }
+        .paypal-btn { background: var(--accent-color); color: white; display: inline-block; text-decoration: none; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <div class="switch-container">
-            <span>Desktop</span>
-            <label class="switch">
-                <input type="checkbox" id="viewToggle" onchange="toggleView()">
-                <span class="slider"></span>
-            </label>
-            <span>Mobile Preview</span>
+        <div>
+            <strong>Step 1:</strong> Fill details &nbsp; | &nbsp; 
+            <strong>Step 2:</strong> 
         </div>
-        <button class="btn btn-green" onclick="processInvoice()">Email PDF</button>
+        <button class="btn btn-main" onclick="processInvoice()">Download PDF & Prepare Email</button>
     </div>
 
     <div id="invoice-card">
         <div class="header">
-            <div>
-                <h1 style="margin:0; color:var(--primary)">INVOICE</h1>
+            <div class="logo-area">
+                <h1>INVOICE</h1>
+                <p>#INV-2026-001</p>
                 <p>Date: Feb 14, 2026</p>
-                <input type="text" id="cust-name" placeholder="Customer Name" style="margin-top:10px">
-                <input type="email" id="cust-email" placeholder="customer@email.com" style="margin-top:5px">
             </div>
             <div style="text-align: right;">
-                <h3>Your Business</h3>
-                <a href="https://facebook.com/yourpage" style="color:var(--accent); text-decoration:none;">Facebook Page</a>
+                <h3>Your Business Name</h3>
+                <p>123 Business Lane, City, State</p>
+                <p><a href="https://facebook.com/yourpage" target="_blank">Follow us on Facebook</a></p>
             </div>
+        </div>
+
+        <div class="client-info">
+            <p><strong>BILL TO:</strong></p>
+            <input type="text" id="cust-name" placeholder="Customer Name"><br>
+            <input type="email" id="cust-email" placeholder="customer@email.com" style="margin-top:10px;">
         </div>
 
         <table>
@@ -102,59 +89,93 @@
                 <tr>
                     <th>Description</th>
                     <th>Qty</th>
-                    <th>Price</th>
+                    <th>Unit Price</th>
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td data-label="Description"><input type="text" value="Service Rendered"></td>
-                    <td data-label="Qty"><input type="number" id="qty" value="1" oninput="updateTotals()"></td>
-                    <td data-label="Price"><input type="number" id="price" value="500" oninput="updateTotals()"></td>
-                    <td data-label="Total" id="row-total">$500.00</td>
+                    <td><input type="text" class="item-input" value="Consulting Services"></td>
+                    <td><input type="number" id="qty" value="1" style="width:40px; border:none;"></td>
+                    <td>$<input type="number" id="price" value="500" style="width:80px; border:none;"></td>
+                    <td id="row-total">$500.00</td>
                 </tr>
             </tbody>
         </table>
 
         <div class="totals">
-            <h2>Total: $<span id="grand-total">500.00</span></h2>
-            <a href="https://www.paypal.com/paypalme/youruser/500" id="paypal-link" class="btn btn-paypal">Pay with PayPal</a>
+            <div class="total-row">
+                Total Due: $<span id="grand-total">500.00</span>
+            </div>
+            <a href="https://www.paypal.com/paypalme/yourusername/500" id="paypal-link" class="btn paypal-btn" target="_blank">
+                Pay Securely via PayPal
+            </a>
+        </div>
+
+        <div class="footer-links">
+            <p>Thank you for your business!</p>
+            <p>Connect with us: <a href="https://facebook.com/yourpage">Facebook</a> | <a href="https://yourwebsite.com">Website</a></p>
         </div>
     </div>
 
     <script>
-        // Toggle Mobile View
-        function toggleView() {
-            const card = document.getElementById('invoice-card');
-            card.classList.toggle('mobile-view');
-        }
+        const priceInput = document.getElementById('price');
+        const qtyInput = document.getElementById('qty');
+        const totalSpan = document.getElementById('grand-total');
+        const rowTotal = document.getElementById('row-total');
+        const paypalLink = document.getElementById('paypal-link');
 
-        // Calculations
+        // Logic to update totals and PayPal link dynamically
         function updateTotals() {
-            const q = document.getElementById('qty').value;
-            const p = document.getElementById('price').value;
-            const total = (q * p).toFixed(2);
-            document.getElementById('grand-total').innerText = total;
-            document.getElementById('row-total').innerText = '$' + total;
-            document.getElementById('paypal-link').href = `https://www.paypal.com/paypalme/youruser/${total}`;
+            const total = priceInput.value * qtyInput.value;
+            totalSpan.innerText = total.toFixed(2);
+            rowTotal.innerText = '$' + total.toFixed(2);
+            
+            // Update PayPal Link: paypal.me/username/amount
+            const username = "yourusername"; // Change this to your PayPal.me username
+            paypalLink.href = `https://www.paypal.com/paypalme/${username}/${total}`;
         }
 
-        // PDF & Email Logic
-        function processInvoice() {
-            const card = document.getElementById('invoice-card');
-            const email = document.getElementById('cust-email').value;
-            
-            // Ensure we generate the PDF in "Desktop" style for a professional look
-            const isMobile = card.classList.contains('mobile-view');
-            if(isMobile) card.classList.remove('mobile-view');
+        priceInput.addEventListener('input', updateTotals);
+        qtyInput.addEventListener('input', updateTotals);
 
+        // Core function: PDF Generation + Email Trigger
+        function processInvoice() {
+            const element = document.getElementById('invoice-card');
+            const email = document.getElementById('cust-email').value;
+            const name = document.getElementById('cust-name').value;
+            const amount = totalSpan.innerText;
+
+            if (!email || !name) {
+                alert("Please enter both Customer Name and Email.");
+                return;
+            }
+
+            // 1. PDF Settings
             const opt = {
-                margin: 0.5,
-                filename: 'invoice.pdf',
-                html2canvas: { scale: 2 },
+                margin: 0.2,
+                filename: `Invoice_${name.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(card).save().then(() => {
-                if(isMobile) card.classList.add('mobile-view'); // Switch back if user was in mobile view
-                window.location.href = `mailto:${
+            // 2. Generate PDF and then open Email
+            html2pdf().set(opt).from(element).save().then(() => {
+                const subject = encodeURIComponent(`Invoice from Your Business - $${amount}`);
+                const body = encodeURIComponent(
+                    `Hi ${name},\n\n` +
+                    `Please find your invoice for $${amount} attached to this email.\n\n` +
+                    `You can pay directly via PayPal here: ${paypalLink.href}\n\n` +
+                    `Best regards,\nYour Business Name`
+                );
+
+                // Open the default mail client
+                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                
+                alert("1. PDF Downloaded.\n2. Email client opened.\n\nNote: Remember to attach the PDF from your downloads folder!");
+            });
+        }
+    </script>
+</body>
+</html>
