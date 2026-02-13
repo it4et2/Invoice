@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Invoice Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root { --primary: #2c3e50; --accent: #0070ba; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
+
+        /* --- UI Controls --- */
+        .controls { 
+            max-width: 800px; margin: 10px auto; background: white; 
+            padding: 15px; border-radius: 8px; display: flex; 
+            flex-wrap: wrap; justify-content: space-between; gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* --- Toggle Switch Styling --- */
+        .switch-container { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { 
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
+            background-color: #ccc; transition: .4s; border-radius: 24px; 
+        }
+        .slider:before { 
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; 
+            bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; 
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* --- Invoice Styling --- */
+        #invoice-card {
+            background: white; width: 95%; max-width: 800px;
+            margin: 20px auto; padding: 40px; border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile View Class (Triggered by Toggle) */
+        .mobile-view { padding: 15px !important; width: 100% !important; max-width: 400px !important; font-size: 14px; }
+        .mobile-view .header { flex-direction: column; text-align: left !important; }
+        .mobile-view table, .mobile-view thead, .mobile-view tbody, .mobile-view th, .mobile-view td, .mobile-view tr { 
+            display: block; width: 100%; 
+        }
+        .mobile-view th { display: none; }
+        .mobile-view td { border-bottom: 1px solid #eee; position: relative; padding-left: 50%; text-align: right; }
+        .mobile-view td:before { content: attr(data-label); position: absolute; left: 10px; font-weight: bold; }
+
+        /* Standard Layout */
+        .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        input { border: 1px solid #ddd; padding: 5px; border-radius: 4px; width: 100%; box-sizing: border-box; }
+        
+        .totals { margin-top: 30px; text-align: right; }
+        .btn { padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; text-decoration: none; display: inline-block; }
+        .btn-green { background: #27ae60; }
+        .btn-paypal { background: var(--accent); margin-top: 10px; }
+
+        @media (max-width: 600px) {
+            #invoice-card { padding: 20px; }
+            .header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <div class="switch-container">
+            <span>Desktop</span>
+            <label class="switch">
+                <input type="checkbox" id="viewToggle" onchange="toggleView()">
+                <span class="slider"></span>
+            </label>
+            <span>Mobile Preview</span>
+        </div>
+        <button class="btn btn-green" onclick="processInvoice()">Email PDF</button>
+    </div>
+
+    <div id="invoice-card">
+        <div class="header">
+            <div>
+                <h1 style="margin:0; color:var(--primary)">INVOICE</h1>
+                <p>Date: Feb 14, 2026</p>
+                <input type="text" id="cust-name" placeholder="Customer Name" style="margin-top:10px">
+                <input type="email" id="cust-email" placeholder="customer@email.com" style="margin-top:5px">
+            </div>
+            <div style="text-align: right;">
+                <h3>Your Business</h3>
+                <a href="https://facebook.com/yourpage" style="color:var(--accent); text-decoration:none;">Facebook Page</a>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="Description"><input type="text" value="Service Rendered"></td>
+                    <td data-label="Qty"><input type="number" id="qty" value="1" oninput="updateTotals()"></td>
+                    <td data-label="Price"><input type="number" id="price" value="500" oninput="updateTotals()"></td>
+                    <td data-label="Total" id="row-total">$500.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <h2>Total: $<span id="grand-total">500.00</span></h2>
+            <a href="https://www.paypal.com/paypalme/youruser/500" id="paypal-link" class="btn btn-paypal">Pay with PayPal</a>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Mobile View
+        function toggleView() {
+            const card = document.getElementById('invoice-card');
+            card.classList.toggle('mobile-view');
+        }
+
+        // Calculations
+        function updateTotals() {
+            const q = document.getElementById('qty').value;
+            const p = document.getElementById('price').value;
+            const total = (q * p).toFixed(2);
+            document.getElementById('grand-total').innerText = total;
+            document.getElementById('row-total').innerText = '$' + total;
+            document.getElementById('paypal-link').href = `https://www.paypal.com/paypalme/youruser/${total}`;
+        }
+
+        // PDF & Email Logic
+        function processInvoice() {
+            const card = document.getElementById('invoice-card');
+            const email = document.getElementById('cust-email').value;
+            
+            // Ensure we generate the PDF in "Desktop" style for a professional look
+            const isMobile = card.classList.contains('mobile-view');
+            if(isMobile) card.classList.remove('mobile-view');
+
+            const opt = {
+                margin: 0.5,
+                filename: 'invoice.pdf',
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(card).save().then(() => {
+                if(isMobile) card.classList.add('mobile-view'); // Switch back if user was in mobile view
+                window.location.href = `mailto:${
