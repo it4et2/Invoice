@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Generator & Emailer</title>
+    <title>Tax Invoice Generator</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root { --primary-color: #2c3e50; --accent-color: #0070ba; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 40px; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
         
-        /* Dashboard Controls */
         .controls { 
             max-width: 800px; margin: 0 auto 20px auto; 
             background: white; padding: 20px; border-radius: 8px; 
@@ -19,67 +18,65 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* The Invoice Paper */
         #invoice-card {
-            background: white; width: 800px; min-height: 1000px;
-            margin: 0 auto; padding: 50px; border-radius: 4px;
+            background: white; 
+            width: 750px; 
+            min-height: 1000px;
+            margin: 0 auto; 
+            padding: 40px; 
+            border-radius: 4px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
+            box-sizing: border-box;
         }
 
         .header { display: flex; justify-content: space-between; margin-bottom: 50px; }
         .logo-area h1 { color: var(--primary-color); margin: 0; letter-spacing: 2px; }
         
+        .business-logo { max-width: 200px; max-height: 80px; margin-bottom: 10px; }
+
         .client-info { margin-bottom: 40px; }
         .client-info input { border: none; border-bottom: 1px dashed #ccc; padding: 5px; width: 250px; font-size: 1rem; }
-        .client-info input:focus { outline: none; border-bottom: 1px solid var(--accent-color); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #f8f9fa; text-align: left; padding: 15px; border-bottom: 2px solid #eee; }
-        td { padding: 15px; border-bottom: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
+        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; word-wrap: break-word; }
         
-        .item-input { width: 90%; border: 1px solid transparent; padding: 5px; }
-        .item-input:hover { border: 1px solid #eee; }
+        .item-input { width: 95%; border: 1px solid transparent; padding: 5px; font-size: 14px; }
 
         .totals { float: right; width: 300px; margin-top: 30px; text-align: right; }
         .total-row { font-size: 1.2rem; font-weight: bold; padding-top: 10px; border-top: 2px solid #333; }
 
-        .footer-links { margin-top: 100px; border-top: 1px solid #eee; padding-top: 20px; color: #7f8c8d; font-size: 0.9rem; }
-        .footer-links a { color: var(--accent-color); text-decoration: none; margin-right: 15px; }
+        .footer-links { margin-top: 80px; border-top: 1px solid #eee; padding-top: 20px; color: #7f8c8d; font-size: 0.85rem; clear: both; }
 
-        /* Buttons */
-        .btn { padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn { padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; }
         .btn-main { background: #27ae60; color: white; }
-        .btn-main:hover { background: #219150; }
-        .paypal-btn { background: var(--accent-color); color: white; display: inline-block; text-decoration: none; margin-top: 10px; }
+        .paypal-btn { background: var(--accent-color); color: white; display: inline-block; text-decoration: none; margin-top: 10px; padding: 10px 15px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <div>
-            <strong>Step 1:</strong> Fill details &nbsp; | &nbsp; 
-            <strong>Step 2:</strong> 
-        </div>
-        <button class="btn btn-main" onclick="processInvoice()">Download PDF & Prepare Email</button>
+        <div><strong>Step:</strong> Generate Tax PDF & Email</div>
+        <button class="btn btn-main" onclick="processInvoice()">Download & Open Email</button>
     </div>
 
     <div id="invoice-card">
         <div class="header">
             <div class="logo-area">
-                <h1>INVOICE</h1>
-                <p>#INV-2026-001</p>
-                <p>Date: Feb 14, 2026</p>
+                <img src="logo.png" alt="Business Logo" class="business-logo">
+                <h1>TAX INVOICE</h1>
+                <p style="margin: 5px 0;">#INV-2026-001</p>
+                <p style="margin: 0;">Date: Feb 14, 2026</p>
             </div>
             <div style="text-align: right;">
-                <h3>Your Business Name</h3>
-                <p>123 Business Lane, City, State</p>
-                <p><a href="https://facebook.com/yourpage" target="_blank">Follow us on Facebook</a></p>
+                <h3 style="margin: 0;">Southport Plumbing</h3>
+                <p style="margin: 5px 0; color: #555;"><strong>ABN: 12 345 678 9</strong></p>
+                <p style="margin: 0;">123 Business Lane, Southport, QLD</p>
             </div>
         </div>
 
         <div class="client-info">
-            <p><strong>BILL TO:</strong></p>
+            <p style="margin-bottom: 5px;"><strong>BILL TO:</strong></p>
             <input type="text" id="cust-name" placeholder="Customer Name"><br>
             <input type="email" id="cust-email" placeholder="customer@email.com" style="margin-top:10px;">
         </div>
@@ -87,17 +84,17 @@
         <table>
             <thead>
                 <tr>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
+                    <th style="width: 50%;">Description</th>
+                    <th style="width: 10%;">Qty</th>
+                    <th style="width: 20%;">Unit Price</th>
+                    <th style="width: 20%;">Total</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><input type="text" class="item-input" value="Consulting Services"></td>
-                    <td><input type="number" id="qty" value="1" style="width:40px; border:none;"></td>
-                    <td>$<input type="number" id="price" value="500" style="width:80px; border:none;"></td>
+                    <td><input type="number" id="qty" value="1" style="width:100%; border:none;"></td>
+                    <td>$<input type="number" id="price" value="500" style="width:80%; border:none;"></td>
                     <td id="row-total">$500.00</td>
                 </tr>
             </tbody>
@@ -114,7 +111,7 @@
 
         <div class="footer-links">
             <p>Thank you for your business!</p>
-            <p>Connect with us: <a href="https://facebook.com/yourpage">Facebook</a> | <a href="https://yourwebsite.com">Website</a></p>
+            <p>Note: GST is included in the total price where applicable.</p>
         </div>
     </div>
 
@@ -125,56 +122,63 @@
         const rowTotal = document.getElementById('row-total');
         const paypalLink = document.getElementById('paypal-link');
 
-        // Logic to update totals and PayPal link dynamically
         function updateTotals() {
-            const total = priceInput.value * qtyInput.value;
+            const total = parseFloat(priceInput.value * qtyInput.value) || 0;
             totalSpan.innerText = total.toFixed(2);
             rowTotal.innerText = '$' + total.toFixed(2);
-            
-            // Update PayPal Link: paypal.me/username/amount
-            const username = "yourusername"; // Change this to your PayPal.me username
+            const username = "yourusername"; 
             paypalLink.href = `https://www.paypal.com/paypalme/${username}/${total}`;
         }
 
         priceInput.addEventListener('input', updateTotals);
         qtyInput.addEventListener('input', updateTotals);
 
-        // Core function: PDF Generation + Email Trigger
-        function processInvoice() {
+        async function processInvoice() {
             const element = document.getElementById('invoice-card');
             const email = document.getElementById('cust-email').value;
             const name = document.getElementById('cust-name').value;
             const amount = totalSpan.innerText;
 
             if (!email || !name) {
-                alert("Please enter both Customer Name and Email.");
+                alert("Please fill in Customer Name and Email first!");
                 return;
             }
 
-            // 1. PDF Settings
+            // Updated filename for Tax Invoice
+            const fileName = `Tax_Invoice_${name.replace(/\s+/g, '_')}.pdf`;
+
             const opt = {
-                margin: 0.2,
-                filename: `Invoice_${name.replace(/\s+/g, '_')}.pdf`,
+                margin: [0.5, 0.5],
+                filename: fileName,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true,
+                    letterRendering: true,
+                    width: 750
+                },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            // 2. Generate PDF and then open Email
-            html2pdf().set(opt).from(element).save().then(() => {
-                const subject = encodeURIComponent(`Invoice from Your Business - $${amount}`);
+            try {
+                await html2pdf().set(opt).from(element).save();
+
+                const subject = encodeURIComponent(`Tax Invoice: ${fileName}`);
                 const body = encodeURIComponent(
                     `Hi ${name},\n\n` +
-                    `Please find your invoice for $${amount} attached to this email.\n\n` +
-                    `You can pay directly via PayPal here: ${paypalLink.href}\n\n` +
-                    `Best regards,\nYour Business Name`
+                    `Please find your tax invoice for $${amount} attached.\n\n` +
+                    `ABN: 12 345 678 9\n` +
+                    `Pay via PayPal: ${paypalLink.href}\n\n` +
+                    `Regards,\nYour Business`
                 );
 
-                // Open the default mail client
-                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-                
-                alert("1. PDF Downloaded.\n2. Email client opened.\n\nNote: Remember to attach the PDF from your downloads folder!");
-            });
+                setTimeout(() => {
+                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                }, 1000);
+
+            } catch (err) {
+                alert("Error: " + err);
+            }
         }
     </script>
 </body>
