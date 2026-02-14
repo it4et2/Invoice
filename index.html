@@ -30,27 +30,39 @@
         }
 
         .header { display: flex; justify-content: space-between; margin-bottom: 50px; }
-        .logo-area h1 { color: var(--primary-color); margin: 0; letter-spacing: 2px; }
-        
-        .business-logo { max-width: 200px; max-height: 80px; margin-bottom: 10px; }
+        .logo-placeholder { font-size: 24px; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; }
+        .logo-area h1 { color: var(--primary-color); margin: 0; letter-spacing: 2px; font-size: 2rem; }
+
+        .header-input { border: none; border-bottom: 1px dashed #ccc; padding: 2px; font-size: 0.9rem; width: 150px; margin-bottom: 5px; display: block; }
+        .inv-num { font-weight: bold; color: #333; }
 
         .client-info { margin-bottom: 40px; }
         .client-info input { border: none; border-bottom: 1px dashed #ccc; padding: 5px; width: 250px; font-size: 1rem; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
         th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #eee; word-wrap: break-word; }
+        td { padding: 12px; border-bottom: 1px solid #eee; word-wrap: break-word; vertical-align: middle; }
         
         .item-input { width: 95%; border: 1px solid transparent; padding: 5px; font-size: 14px; }
+        .num-input { width: 80%; border: none; font-size: 14px; background: transparent; }
 
-        .totals { float: right; width: 300px; margin-top: 30px; text-align: right; }
-        .total-row { font-size: 1.2rem; font-weight: bold; padding-top: 10px; border-top: 2px solid #333; }
+        /* Fixed Layout: Using Flexbox instead of floats to ensure PDF captures everything */
+        .summary-section { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 40px; }
 
-        .footer-links { margin-top: 80px; border-top: 1px solid #eee; padding-top: 20px; color: #7f8c8d; font-size: 0.85rem; clear: both; }
+        .bank-details { background: #f9f9f9; padding: 15px; border-radius: 4px; width: 300px; border-left: 4px solid var(--primary-color); }
+        .bank-details p { margin: 3px 0; font-size: 0.9rem; }
 
-        .btn { padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; }
+        .totals { width: 300px; text-align: right; }
+        .subtotal-row { font-size: 1rem; color: #666; margin-bottom: 5px; }
+        .total-row { font-size: 1.2rem; font-weight: bold; padding-top: 10px; border-top: 2px solid #333; margin-top: 10px; }
+
+        .footer-links { margin-top: 60px; color: #7f8c8d; font-size: 0.85rem; border-top: 1px solid #eee; padding-top: 20px; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; }
         .btn-main { background: #27ae60; color: white; }
-        .paypal-btn { background: var(--accent-color); color: white; display: inline-block; text-decoration: none; margin-top: 10px; padding: 10px 15px; border-radius: 4px; }
+        .btn-add { background: #3498db; color: white; margin-top: 15px; }
+        .btn-del { background: #e74c3c; color: white; padding: 5px 10px; font-size: 12px; }
+        .paypal-btn { background: var(--accent-color); color: white; display: inline-block; text-decoration: none; margin-top: 10px; padding: 10px 15px; border-radius: 4px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -63,10 +75,12 @@
     <div id="invoice-card">
         <div class="header">
             <div class="logo-area">
-                <img src="logo.png" alt="Business Logo" class="business-logo">
+                <div class="logo-placeholder">Southport Plumbing</div>
                 <h1>TAX INVOICE</h1>
-                <p style="margin: 5px 0;">#INV-2026-001</p>
-                <p style="margin: 0;">Date: Feb 14, 2026</p>
+                <div style="margin-top: 10px;">
+                    <input type="text" class="header-input inv-num" value="#INV-2026-001">
+                    <input type="text" class="header-input" value="Date: Feb 14, 2026">
+                </div>
             </div>
             <div style="text-align: right;">
                 <h3 style="margin: 0;">Southport Plumbing</h3>
@@ -81,32 +95,51 @@
             <input type="email" id="cust-email" placeholder="customer@email.com" style="margin-top:10px;">
         </div>
 
-        <table>
+        <table id="items-table">
             <thead>
                 <tr>
-                    <th style="width: 50%;">Description</th>
+                    <th style="width: 45%;">Description</th>
                     <th style="width: 10%;">Qty</th>
-                    <th style="width: 20%;">Unit Price</th>
-                    <th style="width: 20%;">Total</th>
+                    <th style="width: 15%;">Unit Price</th>
+                    <th style="width: 15%;">Total</th>
+                    <th style="width: 15%; text-align: center;" class="action-col">Action</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td><input type="text" class="item-input" value="Consulting Services"></td>
-                    <td><input type="number" id="qty" value="1" style="width:100%; border:none;"></td>
-                    <td>$<input type="number" id="price" value="500" style="width:80%; border:none;"></td>
-                    <td id="row-total">$500.00</td>
+            <tbody id="invoice-body">
+                <tr class="item-row">
+                    <td><input type="text" class="item-input" value="Plumbing Services"></td>
+                    <td><input type="number" class="num-input qty" value="1" oninput="updateTotals()"></td>
+                    <td>$<input type="number" class="num-input price" value="500" oninput="updateTotals()"></td>
+                    <td class="row-total">$500.00</td>
+                    <td class="action-col" style="text-align: center;">
+                        <button class="btn btn-del" onclick="removeRow(this)">Remove</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
 
-        <div class="totals">
-            <div class="total-row">
-                Total Due: $<span id="grand-total">500.00</span>
+        <button class="btn btn-add" id="add-item-btn" onclick="addRow()">+ Add Item</button>
+
+        <div class="summary-section">
+            <div class="bank-details">
+                <p><strong>Bank Transfer Details:</strong></p>
+                <p>Bank: Commonwealth Bank</p>
+                <p>Account Name: Southport Plumbing</p>
+                <p>BSB: 000-000</p>
+                <p>Account Number: 1234 5678</p>
+                <p><em>Ref: Use Invoice #</em></p>
             </div>
-            <a href="https://www.paypal.com/paypalme/yourusername/500" id="paypal-link" class="btn paypal-btn" target="_blank">
-                Pay Securely via PayPal
-            </a>
+
+            <div class="totals">
+                <div class="subtotal-row">Subtotal (Excl. GST): $<span id="sub-total">454.55</span></div>
+                <div class="subtotal-row">GST (10%): $<span id="gst-amount">45.45</span></div>
+                <div class="total-row">
+                    Total Due: $<span id="grand-total">500.00</span>
+                </div>
+                <a href="https://www.paypal.com/paypalme/yourusername/500" id="paypal-link" class="btn paypal-btn" target="_blank">
+                    Pay Securely via PayPal
+                </a>
+            </div>
         </div>
 
         <div class="footer-links">
@@ -116,61 +149,90 @@
     </div>
 
     <script>
-        const priceInput = document.getElementById('price');
-        const qtyInput = document.getElementById('qty');
-        const totalSpan = document.getElementById('grand-total');
-        const rowTotal = document.getElementById('row-total');
-        const paypalLink = document.getElementById('paypal-link');
-
-        function updateTotals() {
-            const total = parseFloat(priceInput.value * qtyInput.value) || 0;
-            totalSpan.innerText = total.toFixed(2);
-            rowTotal.innerText = '$' + total.toFixed(2);
-            const username = "yourusername"; 
-            paypalLink.href = `https://www.paypal.com/paypalme/${username}/${total}`;
+        function addRow() {
+            const tbody = document.getElementById('invoice-body');
+            const row = document.createElement('tr');
+            row.className = 'item-row';
+            row.innerHTML = `
+                <td><input type="text" class="item-input" placeholder="Service description"></td>
+                <td><input type="number" class="num-input qty" value="1" oninput="updateTotals()"></td>
+                <td>$<input type="number" class="num-input price" value="0" oninput="updateTotals()"></td>
+                <td class="row-total">$0.00</td>
+                <td class="action-col" style="text-align: center;">
+                    <button class="btn btn-del" onclick="removeRow(this)">Remove</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            updateTotals();
         }
 
-        priceInput.addEventListener('input', updateTotals);
-        qtyInput.addEventListener('input', updateTotals);
+        function removeRow(btn) {
+            btn.closest('tr').remove();
+            updateTotals();
+        }
+
+        function updateTotals() {
+            let grandTotal = 0;
+            const rows = document.querySelectorAll('.item-row');
+            
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.qty').value) || 0;
+                const price = parseFloat(row.querySelector('.price').value) || 0;
+                const total = qty * price;
+                row.querySelector('.row-total').innerText = '$' + total.toFixed(2);
+                grandTotal += total;
+            });
+
+            const gst = grandTotal / 11;
+            const subtotal = grandTotal - gst;
+
+            document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
+            document.getElementById('gst-amount').innerText = gst.toFixed(2);
+            document.getElementById('sub-total').innerText = subtotal.toFixed(2);
+            
+            const username = "yourusername"; 
+            document.getElementById('paypal-link').href = `https://www.paypal.com/paypalme/${username}/${grandTotal.toFixed(2)}`;
+        }
 
         async function processInvoice() {
+            const actionCols = document.querySelectorAll('.action-col');
+            const addBtn = document.getElementById('add-item-btn');
+            
+            // Hide non-print elements
+            actionCols.forEach(col => col.style.display = 'none');
+            addBtn.style.display = 'none';
+
             const element = document.getElementById('invoice-card');
             const email = document.getElementById('cust-email').value;
             const name = document.getElementById('cust-name').value;
-            const amount = totalSpan.innerText;
+            const amount = document.getElementById('grand-total').innerText;
 
             if (!email || !name) {
                 alert("Please fill in Customer Name and Email first!");
+                actionCols.forEach(col => col.style.display = '');
+                addBtn.style.display = 'inline-block';
                 return;
             }
 
-            // Updated filename for Tax Invoice
             const fileName = `Tax_Invoice_${name.replace(/\s+/g, '_')}.pdf`;
 
             const opt = {
-                margin: [0.5, 0.5],
+                margin: 0.5,
                 filename: fileName,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2, 
-                    useCORS: true,
-                    letterRendering: true,
-                    width: 750
-                },
+                html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
             try {
                 await html2pdf().set(opt).from(element).save();
+                
+                // Show elements back
+                actionCols.forEach(col => col.style.display = '');
+                addBtn.style.display = 'inline-block';
 
                 const subject = encodeURIComponent(`Tax Invoice: ${fileName}`);
-                const body = encodeURIComponent(
-                    `Hi ${name},\n\n` +
-                    `Please find your tax invoice for $${amount} attached.\n\n` +
-                    `ABN: 12 345 678 9\n` +
-                    `Pay via PayPal: ${paypalLink.href}\n\n` +
-                    `Regards,\nYour Business`
-                );
+                const body = encodeURIComponent(`Hi ${name},\n\nPlease find your tax invoice for $${amount} attached.\n\nRegards,\nSouthport Plumbing`);
 
                 setTimeout(() => {
                     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
@@ -178,6 +240,8 @@
 
             } catch (err) {
                 alert("Error: " + err);
+                actionCols.forEach(col => col.style.display = '');
+                addBtn.style.display = 'inline-block';
             }
         }
     </script>
