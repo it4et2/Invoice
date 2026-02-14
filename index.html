@@ -18,10 +18,10 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* The Invoice Container */
         #invoice-card {
             background: white; 
             width: 790px;
+            max-width: 100%;
             min-height: 1050px;
             margin: 0 auto; 
             padding: 40px; 
@@ -29,26 +29,26 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.1); 
             box-sizing: border-box;
             position: relative;
-            overflow: hidden; /* Helps contain floats for PDF capture */
+            overflow: hidden; 
         }
 
-        .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
-        .business-logo { max-width: 200px; max-height: 100px; object-fit: contain; margin-bottom: 10px; }
-        .logo-area h1 { color: var(--primary-color); margin: 0; letter-spacing: 2px; font-size: 2rem; }
-        .header-input { border: none; border-bottom: 1px dashed #ccc; padding: 2px; font-size: 0.9rem; width: 170px; margin-bottom: 5px; display: block; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 40px; gap: 10px; }
+        .business-logo { max-width: 180px; max-height: 80px; object-fit: contain; margin-bottom: 10px; }
+        .logo-area h1 { color: var(--primary-color); margin: 0; letter-spacing: 2px; font-size: 1.8rem; }
+        .header-input { border: none; border-bottom: 1px dashed #ccc; padding: 2px; font-size: 0.85rem; width: 100%; max-width: 170px; margin-bottom: 5px; display: block; }
 
-        .business-details { text-align: right; }
+        .business-details { text-align: right; font-size: 0.9rem; min-width: 180px; }
 
         .client-info { margin-bottom: 30px; }
         .client-info input { border: none; border-bottom: 1px dashed #ccc; padding: 5px; width: 100%; max-width: 250px; font-size: 1rem; }
 
-        .table-container { width: 100%; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #eee; word-wrap: break-word; vertical-align: middle; }
+        .table-container { width: 100%; margin-top: 10px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 580px; } 
+        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #eee; font-size: 0.9rem; }
+        td { padding: 10px 8px; border-bottom: 1px solid #eee; word-wrap: break-word; vertical-align: middle; }
         
         .item-input { width: 95%; border: 1px solid transparent; padding: 5px; font-size: 14px; }
-        .num-input { width: 80%; border: none; font-size: 14px; background: transparent; }
+        .num-input { width: 85%; border: none; font-size: 14px; background: transparent; }
 
         .job-notes { margin-top: 20px; page-break-inside: avoid; }
         .job-notes textarea { 
@@ -71,16 +71,16 @@
             page-break-inside: avoid; 
         }
         .bank-details { background: #f9f9f9; padding: 15px; border-radius: 4px; width: 320px; border-left: 4px solid var(--primary-color); }
-        .bank-details p { margin: 3px 0; font-size: 0.9rem; }
+        .bank-details p { margin: 3px 0; font-size: 0.85rem; }
 
-        .totals { width: 300px; text-align: right; }
-        .subtotal-row { font-size: 1rem; color: #666; margin-bottom: 5px; }
-        .total-row { font-size: 1.2rem; font-weight: bold; padding-top: 10px; border-top: 2px solid #333; margin-top: 10px; }
+        .totals { width: 280px; text-align: right; }
+        .subtotal-row { font-size: 0.95rem; color: #666; margin-bottom: 5px; }
+        .total-row { font-size: 1.1rem; font-weight: bold; padding-top: 10px; border-top: 2px solid #333; margin-top: 10px; }
 
         .footer-links { 
             margin-top: 50px; 
             color: #7f8c8d; 
-            font-size: 0.85rem; 
+            font-size: 0.8rem; 
             border-top: 1px solid #eee; 
             padding-top: 20px;
             page-break-inside: avoid;
@@ -91,13 +91,27 @@
         .btn-add { background: #3498db; color: white; margin-top: 15px; }
         .btn-del { background: #e74c3c; color: white; padding: 5px 10px; font-size: 12px; }
         
-        /* Utility class to hide elements during PDF generation */
         .no-print { display: none !important; }
 
+        /* Tablet & Phone Adjustments */
         @media (max-width: 768px) {
-            #invoice-card { width: 100%; padding: 20px; }
+            body { padding: 10px; }
+            #invoice-card { padding: 15px; }
+            .logo-area h1 { font-size: 1.4rem; }
+            .business-details { font-size: 0.8rem; min-width: 150px; }
+            .summary-section { flex-direction: row; align-items: flex-start; }
+            .bank-details { width: 55%; }
+            .totals { width: 40%; }
+        }
+
+        /* Narrow Phone Portrait Fixes */
+        @media (max-width: 480px) {
+            .header { align-items: flex-start; }
+            .logo-area h1 { font-size: 1.1rem; }
+            .business-details p { margin: 1px 0; }
             .summary-section { flex-direction: column; gap: 20px; }
-            .bank-details, .totals { width: 100%; }
+            .bank-details, .totals { width: 100%; text-align: left; }
+            .totals { text-align: right; }
         }
     </style>
 </head>
@@ -116,7 +130,7 @@
             <div class="business-details">
                 <h3 style="margin: 0;">Top Class Plumbing</h3>
                 <p style="margin: 5px 0 2px 0; color: #555;"><strong>ABN: 38446351095</strong></p>
-                <p style="margin: 0 0 5px 0; color: #555; font-size: 0.9rem;"><strong>QBCC - 1401636</strong></p>
+                <p style="margin: 0 0 5px 0; color: #555; font-size: 0.8rem;"><strong>QBCC - 1401636</strong></p>
                 <p style="margin: 0;">PO Box 327 Main Beach 4217</p>
                 <p style="margin: 0;">Email:- topclassplubming@gmail.com</p>
                 <p style="margin: 5px 0 0 0;"><strong>Phone No:- 0413858849</strong></p>
@@ -134,8 +148,8 @@
                 <thead>
                     <tr>
                         <th style="width: 45%;">Description</th>
-                        <th style="width: 15%;">Qty</th>
-                        <th style="width: 20%;">Price</th>
+                        <th style="width: 12%;">Qty</th>
+                        <th style="width: 18%;">Price</th>
                         <th style="width: 20%;">Total</th>
                         <th style="width: 45px;" class="action-col"></th>
                     </tr>
@@ -185,7 +199,7 @@
     </div>
 
     <div class="controls">
-        <div><strong>Action:</strong> Save as PDF & Email</div>
+        <div style="font-size: 0.9rem;"><strong>Action:</strong> Save as PDF</div>
         <button class="btn btn-main" onclick="processInvoice()">Download & Open Email</button>
     </div>
 
@@ -244,7 +258,6 @@
             const sideNotesSection = document.getElementById('side-notes-section');
             const sideNotesText = document.getElementById('side-notes-area').value.trim();
             
-            // Hide elements that shouldn't be in PDF
             actionCols.forEach(col => col.classList.add('no-print'));
             addBtn.classList.add('no-print');
             if (!sideNotesText) sideNotesSection.classList.add('no-print');
@@ -269,10 +282,8 @@
             };
 
             try {
-                // Generate PDF
                 await html2pdf().set(opt).from(element).save();
                 
-                // Show elements back
                 actionCols.forEach(col => col.classList.remove('no-print'));
                 addBtn.classList.remove('no-print');
                 sideNotesSection.classList.remove('no-print');
@@ -287,7 +298,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert("Error generating PDF. Please try again.");
+                alert("Error generating PDF.");
                 actionCols.forEach(col => col.classList.remove('no-print'));
                 addBtn.classList.remove('no-print');
                 sideNotesSection.classList.remove('no-print');
