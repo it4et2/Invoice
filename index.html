@@ -118,7 +118,7 @@
                 <p style="margin: 5px 0 2px 0; color: #555;"><strong>ABN: 38446351095</strong></p>
                 <p style="margin: 0 0 5px 0; color: #555; font-size: 0.9rem;"><strong>QBCC - 1401636</strong></p>
                 <p style="margin: 0;">PO Box 327 Main Beach 4217</p>
-				<p style="margin: 0;">Email:- topclassplubming@gmail.com</p>
+                <p style="margin: 0;">Email:- topclassplubming@gmail.com</p>
                 <p style="margin: 5px 0 0 0;"><strong>Phone No:- 0413858849</strong></p>
             </div>
         </div>
@@ -142,10 +142,10 @@
                 </thead>
                 <tbody id="invoice-body">
                     <tr class="item-row">
-                        <td><input type="text" class="item-input" value="Plumbing Services"></td>
+                        <td><input type="text" class="item-input" placeholder="Plumbing Services"></td>
                         <td><input type="number" class="num-input qty" value="1" oninput="updateTotals()"></td>
-                        <td>$<input type="number" class="num-input price" value="500" oninput="updateTotals()"></td>
-                        <td class="row-total">$500.00</td>
+                        <td>$<input type="number" class="num-input price" placeholder="500" oninput="updateTotals()"></td>
+                        <td class="row-total">$0.00</td>
                         <td class="action-col" style="text-align: center;">
                             <button class="btn btn-del" onclick="removeRow(this)">×</button>
                         </td>
@@ -172,9 +172,9 @@
             </div>
 
             <div class="totals">
-                <div class="subtotal-row">Subtotal (Excl. GST): $<span id="sub-total">454.55</span></div>
-                <div class="subtotal-row">GST (10%): $<span id="gst-amount">45.45</span></div>
-                <div class="total-row">Total Due: $<span id="grand-total">500.00</span></div>
+                <div class="subtotal-row">Subtotal (Excl. GST): $<span id="sub-total">0.00</span></div>
+                <div class="subtotal-row">GST (10%): $<span id="gst-amount">0.00</span></div>
+                <div class="total-row">Total Due: $<span id="grand-total">0.00</span></div>
             </div>
         </div>
 
@@ -206,7 +206,7 @@
             row.innerHTML = `
                 <td><input type="text" class="item-input" placeholder="Service description"></td>
                 <td><input type="number" class="num-input qty" value="1" oninput="updateTotals()"></td>
-                <td>$<input type="number" class="num-input price" value="0" oninput="updateTotals()"></td>
+                <td>$<input type="number" class="num-input price" placeholder="0" oninput="updateTotals()"></td>
                 <td class="row-total">$0.00</td>
                 <td class="action-col" style="text-align: center;">
                     <button class="btn btn-del" onclick="removeRow(this)">×</button>
@@ -256,14 +256,14 @@
             const totalAmount = document.getElementById('grand-total').innerText;
 
             const opt = {
-                margin: 0, // Set to 0 to rely on the #invoice-card's internal padding
+                margin: 0, 
                 filename: `${invNum}_${name.replace(/\s+/g, '_')}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { 
                     scale: 2, 
                     useCORS: true, 
                     logging: false,
-                    scrollY: 0 // Force capture to start at top of element
+                    scrollY: 0 
                 },
                 jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
@@ -281,7 +281,6 @@
                     const emailSubject = encodeURIComponent(`Top Class Plumbing Tax Invoice ${invNum}`);
                     const emailBody = encodeURIComponent(`Hi ${name},\n\nPlease find your invoice for $${totalAmount} attached.\n\nBank Transfer Details:\nBank: BOQ\nName: Steve Godwin\nBSB: 124-394\nACC: 20711177\nRef: ${invNum}\n\nBest regards,\nTop Class Plumbing\ntopclassplubming@gmail.com\nPhone No:- 0413858849`);
                     
-                    // Small delay to ensure download starts before email opens
                     setTimeout(() => {
                         window.location.href = `mailto:${email}?bcc=topclassplumbing@gmail.com&subject=${emailSubject}&body=${emailBody}`;
                     }, 1200);
