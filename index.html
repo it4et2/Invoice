@@ -297,7 +297,7 @@
                 if (email) {
                     const emailSubject = encodeURIComponent(`Top Class Plumbing Tax Invoice ${invNum}`);
                     const emailBody = encodeURIComponent(`Hi ${name},\n\nPlease find your invoice for $${totalAmount} attached.\n\nBank Transfer Details:\nBank: BOQ\nName: Steve Godwin\nBSB: 124-394\nACC: 20711177\nRef: ${invNum}\n\nBest regards,\nTop Class Plumbing\ntopclassplumbing@gmail.com\nPhone No:- 0413 858 849`);
-                    
+                     
                     setTimeout(() => {
                         window.location.href = `mailto:${email}?bcc=topclassplumbing@gmail.com&subject=${emailSubject}&body=${emailBody}`;
                     }, 1200);
@@ -313,3 +313,4 @@
     </script>
 </body>
 </html>
+
