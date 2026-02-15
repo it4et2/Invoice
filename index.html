@@ -127,14 +127,20 @@
                     <input type="text" id="invoice-date" class="header-input" placeholder="Invoice Date">
                 </div>
             </div>
-            <div class="business-details">
-                <h3 style="margin: 0;">Top Class Plumbing</h3>
-                <p style="margin: 5px 0 2px 0; color: #555;"><strong>ABN: 38446351095</strong></p>
-                <p style="margin: 0 0 5px 0; color: #555; font-size: 0.8rem;"><strong>QBCC - 1401636</strong></p>
-                <p style="margin: 0;">PO Box 327 Main Beach 4217</p>
-                <p style="margin: 0;">Email:- topclassplubming@gmail.com</p>
-                <p style="margin: 5px 0 0 0;"><strong>Phone No:- 0413858849</strong></p>
-            </div>
+<div class="business-details">
+    <h3 style="margin: 0;">Top Class Plumbing</h3>
+    <p style="margin: 5px 0 2px 0; color: #555;"><strong>ABN: 38446351095</strong></p>
+    <p style="margin: 0 0 5px 0; color: #555; font-size: 0.8rem;"><strong>QLD LIC. 23971</strong></p>
+    <p style="margin: 0;">PO Box 327 Main Beach 4217</p>
+    <p style="margin: 0;">Email:- topclassplumbing@gmail.com</p>
+    <p style="margin: 5px 0 0 0;"><strong>Phone No:- 0413 858 849</strong></p>
+    <p style="margin: 5px 0 0 0;"><strong>Specializing in ALL Plumbing</strong></p>
+    <p style="margin: 5px 0 10px 0;"><strong>Maintenance and Body Corporate work</strong></p>
+    
+    <div style="display: inline-block; border: 1px solid black; padding: 4px 8px; margin-top: 5px;">
+        <strong>24 HOUR EMERGENCY SERVICE</strong>
+    </div>
+</div>
         </div>
 
         <div class="client-info">
@@ -290,7 +296,7 @@
 
                 if (email) {
                     const emailSubject = encodeURIComponent(`Top Class Plumbing Tax Invoice ${invNum}`);
-                    const emailBody = encodeURIComponent(`Hi ${name},\n\nPlease find your invoice for $${totalAmount} attached.\n\nBank Transfer Details:\nBank: BOQ\nName: Steve Godwin\nBSB: 124-394\nACC: 20711177\nRef: ${invNum}\n\nBest regards,\nTop Class Plumbing\ntopclassplubming@gmail.com\nPhone No:- 0413858849`);
+                    const emailBody = encodeURIComponent(`Hi ${name},\n\nPlease find your invoice for $${totalAmount} attached.\n\nBank Transfer Details:\nBank: BOQ\nName: Steve Godwin\nBSB: 124-394\nACC: 20711177\nRef: ${invNum}\n\nBest regards,\nTop Class Plumbing\ntopclassplumbing@gmail.com\nPhone No:- 0413 858 849`);
                     
                     setTimeout(() => {
                         window.location.href = `mailto:${email}?bcc=topclassplumbing@gmail.com&subject=${emailSubject}&body=${emailBody}`;
