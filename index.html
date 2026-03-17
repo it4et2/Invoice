@@ -110,19 +110,42 @@
         table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 620px; } 
         th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #eee; font-size: 0.9rem; }
         td { padding: 10px 8px; border-bottom: 1px solid #eee; word-wrap: break-word; vertical-align: middle; }
-        .desc-textarea {
-            width: 100%;
+        
+        /* Fixed size box for Descriptions of Work - using contenteditable div for better PDF rendering */
+        .desc-editable {
+            width: 280px; /* Fixed width for 31 characters */
+            min-width: 280px;
+            max-width: 280px;
+            height: 220px; /* Height for 10 lines */
+            min-height: 220px;
+            max-height: 220px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            padding: 6px;
+            padding: 8px;
             font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 50px;
-            max-height: 200px;
+            font-family: 'Courier New', Courier, monospace; /* Monospace for consistent character width */
+            line-height: 1.5;
             background: #fff;
             box-sizing: border-box;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            outline: none;
+            text-align: left;
+            vertical-align: top;
+            resize: none;
+            cursor: text;
         }
+        
+        .desc-editable:empty:before {
+            content: attr(placeholder);
+            color: #999;
+        }
+        
+        .desc-editable:focus:empty:before {
+            content: "";
+        }
+        
         /* Container for material input with dollar sign */
         .material-input-container {
             display: flex;
@@ -197,6 +220,7 @@
             .summary-section { flex-direction: row; align-items: flex-start; }
             .bank-details { width: 55%; }
             .totals { width: 40%; }
+            .desc-editable { width: 100%; min-width: 100%; } /* Full width on mobile */
         }
     </style>
 </head>
@@ -262,7 +286,7 @@
                     </thead>
                     <tbody id="invoice-body">
                         <tr class="item-row">
-                            <td><textarea class="desc-textarea" rows="2" placeholder="Plumbing Services - detailed description..."></textarea></td>
+                            <td><div class="desc-editable" contenteditable="true" placeholder="Plumbing Services - detailed description..."></div></td>
                             <td></td>
                             <td></td>
                             <td>
@@ -351,7 +375,7 @@
             const row = document.createElement('tr');
             row.className = 'item-row';
             row.innerHTML = `
-                <td><textarea class="desc-textarea" rows="2" placeholder="Service Descriptions of Work - detailed..."></textarea></td>
+                <td><div class="desc-editable" contenteditable="true" placeholder="Service Descriptions of Work - detailed..."></div></td>
                 <td></td>
                 <td></td>
                 <td>
